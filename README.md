@@ -1,5 +1,46 @@
-# test
-#Approach of this program:
 
-The Python program provided follows a well-structured approach to identify the longest and second longest compounded words in a list, along with the time taken to process this task
-The program begins by defining two key functions: is_compounded and find_longest_compounded_words.The is_compounded function plays a crucial role in determining whether a given word is compounded - that is, it can be constructed by concatenating shorter words also found in the list. It splits the word into two parts, a prefix and a suffix. The function then checks if the prefix is in the set and recursively calls itself with the suffix. If both the prefix is found and the recursive call with the suffix returns True, the function concludes that the word is indeed compounded.Next, the find_longest_compounded_words function is where the main processing happens. Initially, it records the start time to calculate the processing duration later.words using the is_compounded function. During this process, it keeps track of the longest and second longest compounded words. Once all words are checked, it records the end time.In the __main__ section of the program, these functions are called with the name of the input file. The results, including the longest and second longest compounded words and the processing time, are then printed to the console.
+import time
+​
+def is_compounded(word, words_set, original_word):
+    if word in words_set and word != original_word:
+        return True
+    for i in range(1, len(word)):
+        prefix, suffix = word[:i], word[i:]
+        if prefix in words_set and is_compounded(suffix, words_set, original_word):
+            return True
+    return False
+​
+def find_longest_compounded_words(file_path):
+    start_time = time.time()
+​
+    with open("F:\Desktop\Input_01.txt", 'r') as file:
+        words = file.read().splitlines()
+    words_set = set(words)
+​
+    longest = ""
+    second_longest = ""
+​
+    for word in sorted(words, key=len, reverse=True):
+        if is_compounded(word, words_set, word):
+            if len(word) > len(longest):
+                second_longest, longest = longest, word
+            elif len(word) > len(second_longest):
+                second_longest = word
+​
+    end_time = time.time()
+    time_taken = (end_time - start_time) * 1000  
+​
+    return longest, second_longest, time_taken
+​
+if __name__ == "__main__":
+    file_name = "Input_01.txt"
+    longest, second_longest, time_taken = find_longest_compounded_words(file_name)
+    print(f"File: {file_name}")
+    print(f"Longest Compound Word: {longest}")
+    print(f"Second Longest Compound Word: {second_longest}")
+    print(f"Time taken to process file: {time_taken:.2f} milliseconds")
+​
+File: Input_01.txt
+Longest Compound Word: ratcatdogcat
+Second Longest Compound Word: catsdogcats
+Time taken to process file: 1.00 milliseconds
